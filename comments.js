@@ -1,42 +1,34 @@
-// create web server
+// Create web server
+// npm install express body-parser
+// npm install --save-dev nodemon
+// npm install --save cors
+
 const express = require('express');
+const bodyParser = require('body-parser');
+const cors = require('cors');
+const comments = require('./data/comments');
+
 const app = express();
-const port = 3000;
+const port = 4001;
 
-// static folder
-app.use(express.static('public'));
+app.use(bodyParser.json());
+app.use(cors());
 
-// middleware
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
-// get comments
-const comments = [
-  {
-    name: 'John',
-    message: 'Hello'
-  },
-  {
-    name: 'Jane',
-    message: 'Hi'
-  }
-];
-
-// get comments
 app.get('/comments', (req, res) => {
   res.json(comments);
 });
 
-// post comments
 app.post('/comments', (req, res) => {
-  const comment = req.body;
-  comments.push(comment);
-  res.json({
-    message: 'Comment added'
-  });
+  const { body } = req;
+  const newComment = {
+    id: comments.length + 1,
+    body,
+    username: 'user',
+  };
+  comments.push(newComment);
+  res.json(newComment);
 });
 
-// listen
 app.listen(port, () => {
-  console.log(`Server listening at http://localhost:${port}`);
+  console.log(`Server started on http://localhost:${port}`);
 });
